@@ -1,0 +1,113 @@
+{
+  "name": "Pinokio",
+  "version": "3.2.0",
+  "homepage": "https://pinokio.computer",
+  "description": "pinokio",
+  "main": "main.js",
+  "email": "cocktailpeanuts@proton.me",
+  "author": "https://twitter.com/cocktailpeanut",
+  "scripts": {
+    "start": "electron .",
+    "pack": "./node_modules/.bin/electron-builder --dir",
+    "eject": "hdiutil info | grep '/dev/disk' | awk '{print $1}' | xargs -I {} hdiutil detach {}",
+    "dist": "npm run monkeypatch && export SNAPCRAFT_BUILD_ENVIRONMENT=host && export SNAP_DESTRUCTIVE_MODE='true' && ./node_modules/.bin/electron-builder -mwl && npm run zip",
+    "zip": "node script/zip",
+    "monkeypatch": "cp temp/yarn.js node_modules/app-builder-lib/out/util/yarn.js && cp temp/rebuild.js node_modules/@electron/rebuild/lib/src/rebuild.js",
+    "postinstall": "npm run monkeypatch && ./node_modules/.bin/electron-builder install-app-deps"
+  },
+  "build": {
+    "appId": "computer.pinokio",
+    "asarUnpack": [
+      "node_modules/go-get-folder-size/**/*",
+      "node_modules/7zip-bin/**/*",
+      "node_modules/sweetalert2/**/*",
+      "node_modules/@cocktailpeanut/**/*"
+    ],
+    "nsis": { "include": "build/installer.nsh" },
+    "extraResources": [
+      "./script/**"
+    ],
+    "protocols": [
+      {
+        "name": "pinokio",
+        "schemes": [
+          "pinokio"
+        ]
+      }
+    ],
+    "dmg": {
+      "background": "./assets/background.gif",
+      "contents": [
+        {
+          "x": 250,
+          "y": 150
+        },
+        {
+          "x": 550,
+          "y": 150,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    },
+    "mac": {
+      "category": "utility",
+      "target": [
+        {
+          "target": "default",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ]
+    },
+    "linux": {
+      "maintainer": "Cocktail Peanut <cocktailpeanuts@proton.me>",
+      "target": [
+        {
+          "target": "deb",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        },
+        {
+          "target": "rpm",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        },
+        {
+          "target": "AppImage",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ]
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    }
+  },
+  "license": "MIT",
+  "dependencies": {
+    "electron-store": "^8.1.0",
+    "electron-window-state": "^5.0.3",
+    "pinokiod": "^3.2.0"
+  },
+  "devDependencies": {
+    "@electron/rebuild": "3.2.10",
+    "electron": "^23.1.2",
+    "electron-builder": "^24.0.0"
+  }
+}
